@@ -1,0 +1,6 @@
+[workspace]
+members = [
+	"wasm-core",
+	"wasm-derive",
+    "wasm"
+]
