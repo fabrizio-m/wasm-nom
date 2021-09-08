@@ -1,5 +1,10 @@
-use nom::combinator::{map, verify};
+use nom::{
+    combinator::{map, verify},
+    error::VerboseError,
+    InputIter,
+};
 use wasm_core::values::Parse;
+
 pub mod instructions;
 pub mod modules;
 pub mod types;
@@ -30,7 +35,16 @@ impl<const P: u8> Parse for Suffix<P> {
 fn test1() {
     use modules::Module;
     let file = include_bytes!("loop.wasm");
-    let module = Module::parse::<nom_supreme::error::ErrorTree<_>>(file);
-    println!("{:?}", file);
+    let file = file.split_last().unwrap().1;
+    let module = Module::parse_dbg::<nom_supreme::error::ErrorTree<_>>(file);
+    //assert_eq!(module.0.len(), 0);
+    println!("{:#?}", module);
+}
+#[test]
+fn test2() {
+    use modules::Module;
+    let file = include_bytes!("if.wasm");
+    let module = Module::parse::<VerboseError<_>>(file).unwrap();
+    assert_eq!(module.0.len(), 0);
     println!("{:#?}", module);
 }

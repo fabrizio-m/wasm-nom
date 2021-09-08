@@ -52,8 +52,8 @@ where
     }
 }
 #[derive(Debug)]
-pub struct DebugWrapper<T: Parse>(T);
-impl<T: Parse> Parse for DebugWrapper<T> {
+pub struct DebugWrapper<T: Parse + Debug>(T);
+impl<T: Parse + Debug> Parse for DebugWrapper<T> {
     fn parse<'a, E>(i: &'a [u8]) -> nom::IResult<&[u8], Self, E>
     where
         E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + std::fmt::Debug,
@@ -61,6 +61,7 @@ impl<T: Parse> Parse for DebugWrapper<T> {
         println!("{} --> :{}", type_name::<T>(), i.len());
         let (i, val) = dbg_dmp(T::parse, type_name::<T>())(i)?;
         println!("{} <-- :{}", type_name::<T>(), i.len());
+        println!("OK: {:?}", val);
 
         Ok((i, Self(val)))
     }

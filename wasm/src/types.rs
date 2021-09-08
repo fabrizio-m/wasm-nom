@@ -5,18 +5,18 @@ use wasm_derive::Parse;
 
 #[derive(Parse, Debug)]
 pub enum NumType {
-    #[starting = 0x7F]
-    I32,
-    I64,
-    F32,
+    #[starting = 0x7C]
     F64,
+    F32,
+    I64,
+    I32,
 }
 
 #[derive(Parse, Debug)]
 pub enum RefType {
-    #[starting = 0x70]
-    FuncRef,
+    #[starting = 0x6F]
     ExternRef,
+    FuncRef,
 }
 #[derive(Debug)]
 pub enum ValueType {

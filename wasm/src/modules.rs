@@ -12,7 +12,7 @@ use self::{
 use crate::types::FuncType;
 use nom::{
     bytes::complete::{tag, take},
-    combinator::{map, verify},
+    combinator::{consumed, map, opt, verify},
     multi::many0,
 };
 use wasm_core::values::{Name, Parse};
@@ -45,7 +45,7 @@ pub enum Section {
     DataCountSection(DataCountSection),
 }
 
-#[derive(Parse, Debug)]
+#[derive(Debug)]
 pub struct CustomSection {
     pub name: Name,
     pub data: Vec<u8>,
@@ -112,21 +112,32 @@ impl Parse for Section {
         E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + std::fmt::Debug,
     {
         let (i, id) = verify(u8::parse, |id| *id <= 12)(i)?;
-        let (i, _length) = u32::parse(i)?;
+        let (i, length) = u32::parse(i)?;
         let section = match id {
-            0 => map(CustomSection::parse, |sec| Self::CustomSection(sec))(i),
-            1 => map(TypeSection::parse, |sec| Self::TypeSection(sec))(i),
-            2 => map(ImportSection::parse, |sec| Self::ImportSection(sec))(i),
-            3 => map(FunctionSection::parse, |sec| Self::FunctionSection(sec))(i),
-            4 => map(TableSection::parse, |sec| Self::TableSection(sec))(i),
-            5 => map(MemorySection::parse, |sec| Self::MemorySection(sec))(i),
-            6 => map(GlobalSection::parse, |sec| Self::GlobalSection(sec))(i),
-            7 => map(ExportSection::parse, |sec| Self::ExportSection(sec))(i),
-            8 => map(StartSection::parse, |sec| Self::StartSection(sec))(i),
-            9 => map(ElementSection::parse, |sec| Self::ElementSection(sec))(i),
-            10 => map(CodeSection::parse, |sec| Self::CodeSection(sec))(i),
-            11 => map(DataSection::parse, |sec| Self::DataSection(sec))(i),
-            12 => map(DataCountSection::parse, |sec| Self::DataCountSection(sec))(i),
+            //0 => map(CustomSection::parse, |sec| Self::CustomSection(sec))(i),
+            0 => {
+                let (i, (cons, name)) = consumed(Name::parse)(i)?;
+                let (i, bytes) = take(length as usize - cons.len())(i)?;
+                let sec = Self::CustomSection(CustomSection {
+                    name,
+                    data: bytes.to_owned(),
+                });
+                Ok((i, sec))
+            }
+            1 => map(TypeSection::parse_dbg, |sec| Self::TypeSection(sec))(i),
+            2 => map(ImportSection::parse_dbg, |sec| Self::ImportSection(sec))(i),
+            3 => map(FunctionSection::parse_dbg, |sec| Self::FunctionSection(sec))(i),
+            4 => map(TableSection::parse_dbg, |sec| Self::TableSection(sec))(i),
+            5 => map(MemorySection::parse_dbg, |sec| Self::MemorySection(sec))(i),
+            6 => map(GlobalSection::parse_dbg, |sec| Self::GlobalSection(sec))(i),
+            7 => map(ExportSection::parse_dbg, |sec| Self::ExportSection(sec))(i),
+            8 => map(StartSection::parse_dbg, |sec| Self::StartSection(sec))(i),
+            9 => map(ElementSection::parse_dbg, |sec| Self::ElementSection(sec))(i),
+            10 => map(CodeSection::parse_dbg, |sec| Self::CodeSection(sec))(i),
+            11 => map(DataSection::parse_dbg, |sec| Self::DataSection(sec))(i),
+            12 => map(DataCountSection::parse_dbg, |sec| {
+                Self::DataCountSection(sec)
+            })(i),
             _ => unreachable!(),
         };
         section
@@ -140,7 +151,8 @@ impl Parse for Module {
     {
         let (i, magic) = Magic::parse(i)?;
         let (i, version) = Version::parse(i)?;
-        let (i, sections) = many0(Section::parse)(i)?;
+        let (i, sections) = many0(Section::parse_dbg)(i)?;
+        let (i, _) = opt(tag(b"\n"))(i)?;
         let module = Self {
             magic,
             version,

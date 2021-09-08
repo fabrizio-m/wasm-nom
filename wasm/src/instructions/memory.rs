@@ -96,7 +96,7 @@ fn simple(op: u8, mem_arg: MemArg) -> MemoryInstruction {
         0x2C => MemoryInstruction::I32Load8S(mem_arg),
         0x2D => MemoryInstruction::I32Load8U(mem_arg),
         0x2E => MemoryInstruction::I32Load16S(mem_arg),
-        0x3f => MemoryInstruction::I32Load16U(mem_arg),
+        0x2F => MemoryInstruction::I32Load16U(mem_arg),
         0x30 => MemoryInstruction::I64Load8S(mem_arg),
         0x31 => MemoryInstruction::I64Load8U(mem_arg),
         0x32 => MemoryInstruction::I64Load16S(mem_arg),
