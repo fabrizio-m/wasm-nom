@@ -1,8 +1,4 @@
-use nom::{
-    combinator::{map, verify},
-    error::VerboseError,
-    InputIter,
-};
+use nom::combinator::{map, verify};
 use wasm_core::values::Parse;
 
 pub mod instructions;
@@ -43,6 +39,7 @@ fn test1() {
 #[test]
 fn test2() {
     use modules::Module;
+    use nom::error::VerboseError;
     let file = include_bytes!("if.wasm");
     let module = Module::parse::<VerboseError<_>>(file).unwrap();
     assert_eq!(module.0.len(), 0);
