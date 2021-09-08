@@ -1,0 +1,1 @@
+A Wasm 1.1( draft 2021-08-19) parser based in [nom](https://github.com/Geal/nom).

@@ -50,6 +50,10 @@ where
     {
         dbg_dmp(Self::parse, type_name::<Self>())(i)
     }
+    ///parses with minimal error information
+    fn parse_simple<'a>(i: &'a [u8]) -> IResult<&[u8], Self, nom::error::Error<&'a [u8]>> {
+        Self::parse(i)
+    }
 }
 #[derive(Debug)]
 pub struct DebugWrapper<T: Parse + Debug>(T);
