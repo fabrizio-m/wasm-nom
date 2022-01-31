@@ -10,6 +10,7 @@ use self::{
     table::Table,
 };
 use crate::types::FuncType;
+use alloc::vec::Vec;
 use nom::{
     bytes::complete::{tag, take},
     combinator::{consumed, map, opt, verify},
@@ -86,7 +87,7 @@ pub struct Magic;
 impl Parse for Magic {
     fn parse<'a, E>(i: &'a [u8]) -> nom::IResult<&[u8], Self, E>
     where
-        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + std::fmt::Debug,
+        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + core::fmt::Debug,
     {
         let magic = [0x00, 0x61, 0x73, 0x6D];
         map(tag(magic), |_| Self)(i)
@@ -98,7 +99,7 @@ pub struct Version(pub [u8; 4]);
 impl Parse for Version {
     fn parse<'a, E>(i: &'a [u8]) -> nom::IResult<&[u8], Self, E>
     where
-        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + std::fmt::Debug,
+        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + core::fmt::Debug,
     {
         map(take(4_usize), |version: &[u8]| {
             Self([version[0], version[1], version[2], version[3]])
@@ -109,7 +110,7 @@ impl Parse for Version {
 impl Parse for Section {
     fn parse<'a, E>(i: &'a [u8]) -> nom::IResult<&[u8], Self, E>
     where
-        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + std::fmt::Debug,
+        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + core::fmt::Debug,
     {
         let (i, id) = verify(u8::parse, |id| *id <= 12)(i)?;
         let (i, length) = u32::parse(i)?;
@@ -120,7 +121,7 @@ impl Parse for Section {
                 let (i, bytes) = take(length as usize - cons.len())(i)?;
                 let sec = Self::CustomSection(CustomSection {
                     name,
-                    data: bytes.to_owned(),
+                    data: bytes.to_vec(),
                 });
                 Ok((i, sec))
             }
@@ -147,7 +148,7 @@ impl Parse for Section {
 impl Parse for Module {
     fn parse<'a, E>(i: &'a [u8]) -> nom::IResult<&[u8], Self, E>
     where
-        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + std::fmt::Debug,
+        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + core::fmt::Debug,
     {
         let (i, magic) = Magic::parse(i)?;
         let (i, version) = Version::parse(i)?;

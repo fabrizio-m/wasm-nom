@@ -1,5 +1,6 @@
 use super::indices::{FuncIdx, TableIdx};
 use crate::{instructions::Expression, types::RefType};
+use alloc::vec::Vec;
 use wasm_core::values::Parse;
 use wasm_derive::Parse;
 

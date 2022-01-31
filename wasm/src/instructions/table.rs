@@ -1,11 +1,11 @@
+use crate::modules::indices::{ElemIdx, TableIdx};
+use alloc::vec::Vec;
 use nom::{
     character::complete::one_of,
     combinator::{map, verify},
     sequence::tuple,
 };
 use wasm_core::values::Parse;
-
-use crate::modules::indices::{ElemIdx, TableIdx};
 
 #[derive(Debug)]
 pub enum TableInstruction {
@@ -21,7 +21,7 @@ pub enum TableInstruction {
 impl Parse for TableInstruction {
     fn parse<'a, E>(i: &'a [u8]) -> nom::IResult<&[u8], Self, E>
     where
-        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + std::fmt::Debug,
+        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + core::fmt::Debug,
     {
         let (i, op) = one_of([0x25, 0x26, 0xFC])(i)?;
         match op as u8 {

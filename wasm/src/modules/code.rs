@@ -1,4 +1,5 @@
 use crate::{instructions::Expression, types::ValueType};
+use alloc::vec::Vec;
 use wasm_core::values::Parse;
 use wasm_derive::Parse;
 

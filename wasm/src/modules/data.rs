@@ -1,5 +1,6 @@
 use super::indices::MemIdx;
 use crate::instructions::Expression;
+use alloc::vec::Vec;
 use wasm_core::values::Parse;
 use wasm_derive::Parse;
 

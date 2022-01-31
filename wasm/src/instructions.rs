@@ -8,6 +8,7 @@ use self::{
     variable::VariableInstruction,
 };
 use crate::Suffix;
+use alloc::vec::Vec;
 use nom::{branch::alt, combinator::map, multi};
 use wasm_core::values::Parse;
 
@@ -29,19 +30,19 @@ impl<const END: u8> From<TerminatedInstructionSequence<END>> for Instructions {
 impl Instructions {
     fn parse_with_finalizer<'a, E, const END: u8>(i: &'a [u8]) -> nom::IResult<&[u8], Self, E>
     where
-        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + std::fmt::Debug,
+        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + core::fmt::Debug,
     {
         let (i, seq) = <TerminatedInstructionSequence<END>>::parse(i)?;
         Ok((i, seq.into()))
     }
     fn empty() -> Self {
-        Self(vec![])
+        Self(Vec::new())
     }
 }
 impl Parse for Instructions {
     fn parse<'a, E>(i: &'a [u8]) -> nom::IResult<&[u8], Self, E>
     where
-        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + std::fmt::Debug,
+        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + core::fmt::Debug,
     {
         Self::parse_with_finalizer::<_, 0x0B>(i)
     }
@@ -66,7 +67,7 @@ pub enum Instruction {
 impl Parse for Instruction {
     fn parse<'a, E>(i: &'a [u8]) -> nom::IResult<&[u8], Self, E>
     where
-        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + std::fmt::Debug,
+        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + core::fmt::Debug,
     {
         let parsers = (
             map(ControlInstruction::parse, |instruction| {
@@ -103,7 +104,7 @@ pub struct Expression(Vec<Instruction>);
 impl Parse for Expression {
     fn parse<'a, E>(i: &'a [u8]) -> nom::IResult<&[u8], Self, E>
     where
-        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + std::fmt::Debug,
+        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + core::fmt::Debug,
     {
         map(<TerminatedInstructionSequence<0x0B>>::parse, |seq| {
             Self(seq.0)
@@ -116,7 +117,7 @@ struct TerminatedInstructionSequence<const END: u8>(Vec<Instruction>);
 impl<const END: u8> Parse for TerminatedInstructionSequence<END> {
     fn parse<'a, E>(i: &'a [u8]) -> nom::IResult<&[u8], Self, E>
     where
-        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + std::fmt::Debug,
+        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + core::fmt::Debug,
     {
         let (i, (instructions, _)) = multi::many_till(Instruction::parse, <Suffix<END>>::parse)(i)?;
         Ok((i, Self(instructions)))

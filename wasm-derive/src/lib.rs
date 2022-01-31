@@ -82,7 +82,7 @@ fn impl_enum(enu: &DataEnum, name: Ident) -> TokenStream {
     impl Parse for #name {
         fn parse<'a, E>(i: &'a [u8]) -> nom::IResult<&[u8], Self, E>
         where
-            E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + std::fmt::Debug,
+            E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + core::fmt::Debug,
         {
             let (i,determinant) = u8::parse(i)?;
 
@@ -108,7 +108,7 @@ fn impl_struct(stru: &DataStruct, name: Ident) -> TokenStream {
                 impl Parse for #id {
                     fn parse<'a, E>(i: &'a [u8]) -> nom::IResult<&[u8], Self, E>
                     where
-                        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + std::fmt::Debug,
+                        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + core::fmt::Debug,
                     {
                         #extracts_stream
                         let structure = Self{
@@ -137,7 +137,7 @@ fn impl_struct(stru: &DataStruct, name: Ident) -> TokenStream {
                 impl Parse for #id {
                     fn parse<'a, E>(i: &'a [u8]) -> nom::IResult<&[u8], Self, E>
                     where
-                        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + std::fmt::Debug,
+                        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + core::fmt::Debug,
                     {
                         #fields
                         let structure = Self(

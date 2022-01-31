@@ -1,3 +1,4 @@
+use alloc::vec::Vec;
 use nom::{
     branch::alt,
     combinator::{map, verify},
@@ -51,7 +52,7 @@ pub enum MemoryInstruction {
 impl Parse for MemoryInstruction {
     fn parse<'a, E>(i: &'a [u8]) -> nom::IResult<&[u8], Self, E>
     where
-        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + std::fmt::Debug,
+        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + core::fmt::Debug,
     {
         let (i, op) = verify(u8::parse, |op| (*op >= 0x28 && *op <= 0x40) || *op == 0xFC)(i)?;
         let op = match op {
@@ -75,7 +76,7 @@ impl Parse for MemoryInstruction {
 }
 fn prefixed<'a, E>(i: &'a [u8]) -> nom::IResult<&[u8], MemoryInstruction, E>
 where
-    E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + std::fmt::Debug,
+    E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + core::fmt::Debug,
 {
     let init = tuple((<Prefix<8>>::parse, DataIdx::parse, Zero::parse));
     let init = map(init, |data| MemoryInstruction::Init(data.0, data.1, data.2));

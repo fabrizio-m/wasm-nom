@@ -1,3 +1,4 @@
+use alloc::vec::Vec;
 use nom::combinator::verify;
 use wasm_core::values::Parse;
 use wasm_derive::Parse;
@@ -167,7 +168,7 @@ pub enum SaturatingTruncationInstruction {
 impl Parse for SaturatingTruncationInstruction {
     fn parse<'a, E>(i: &'a [u8]) -> nom::IResult<&[u8], Self, E>
     where
-        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + std::fmt::Debug,
+        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + core::fmt::Debug,
     {
         let (i, prefix) = verify(u32::parse, |prefix| *prefix <= 7)(i)?;
         let ins = match prefix {

@@ -1,5 +1,6 @@
+use alloc::vec::Vec;
+use core::fmt::Debug;
 use nom::{branch::alt, bytes::complete::tag, sequence::tuple, Parser};
-use std::fmt::Debug;
 use wasm_core::values::Parse;
 use wasm_derive::Parse;
 
@@ -26,7 +27,7 @@ pub enum ValueType {
 impl Parse for ValueType {
     fn parse<'a, E>(i: &'a [u8]) -> nom::IResult<&[u8], Self, E>
     where
-        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + std::fmt::Debug,
+        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + core::fmt::Debug,
     {
         let num_type = NumType::parse.map(|num_type| ValueType::NumType(num_type));
         let ref_type = RefType::parse.map(|ref_type| ValueType::RefType(ref_type));
@@ -44,7 +45,7 @@ pub struct FuncType {
 impl Parse for FuncType {
     fn parse<'a, E>(i: &'a [u8]) -> nom::IResult<&[u8], Self, E>
     where
-        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + std::fmt::Debug,
+        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + core::fmt::Debug,
     {
         let (i, _) = tag([0x60])(i)?;
         let (i, rt1) = Parse::parse(i)?;
@@ -61,7 +62,7 @@ pub struct Limit {
 impl Parse for Limit {
     fn parse<'a, E>(i: &'a [u8]) -> nom::IResult<&[u8], Self, E>
     where
-        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + std::fmt::Debug,
+        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + core::fmt::Debug,
     {
         let without_max = tuple((tag([0x00]), u32::parse)).map(|(_, min)| Limit { min, max: None });
         let with_max = tuple((tag([0x01]), u32::parse, u32::parse)).map(|(_, min, max)| Limit {

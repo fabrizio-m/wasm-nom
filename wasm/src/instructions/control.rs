@@ -4,6 +4,7 @@ use crate::{
     modules::indices::{FuncIdx, LabelIdx, TableIdx, TypeIdx},
     types::ValueType,
 };
+use alloc::vec::Vec;
 use nom::{
     branch::alt, bytes::complete::tag, character::complete::one_of, multi::many_till,
     sequence::tuple, Parser,
@@ -20,7 +21,7 @@ pub enum BlockType {
 impl Parse for BlockType {
     fn parse<'a, E>(i: &'a [u8]) -> nom::IResult<&[u8], Self, E>
     where
-        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + std::fmt::Debug,
+        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + core::fmt::Debug,
     {
         let empty = tag([0x40]).map(|_| Self::Empty);
         let val_type = ValueType::parse.map(|val_type| Self::ValType(val_type));
@@ -50,7 +51,7 @@ const END: u8 = 0x0B;
 impl Parse for ControlInstruction {
     fn parse<'a, E>(i: &'a [u8]) -> nom::IResult<&[u8], Self, E>
     where
-        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + std::fmt::Debug,
+        E: nom::error::ParseError<&'a [u8]> + nom::error::ContextError<&'a [u8]> + core::fmt::Debug,
     {
         let (i, opcode) = one_of([
             0x00, 0x01, 0x02, 0x03, 0x04, 0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11,
